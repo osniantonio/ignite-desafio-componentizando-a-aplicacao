@@ -6,24 +6,7 @@ import { Content } from "./components/Content";
 import { api } from "./services/api";
 
 import "./styles/global.scss";
-
-export interface IGenreResponseProps {
-  id: number;
-  name: "action" | "comedy" | "documentary" | "drama" | "horror" | "family";
-  title: string;
-  link?: string;
-}
-
-export interface IMovieProps {
-  Title: string;
-  Poster: string;
-  Ratings: Array<{
-    Source: string;
-    Value: string;
-  }>;
-  Runtime: string;
-  link: string;
-}
+import { IGenreResponseProps, IMovieProps } from "./@interfaces";
 
 export function App() {
   const [selectedGenreId, setSelectedGenreId] = useState(1);
@@ -34,11 +17,17 @@ export function App() {
   const [selectedGenre, setSelectedGenre] = useState<IGenreResponseProps>(
     {} as IGenreResponseProps
   );
+  const errorHandler = (e: any) => {
+    console.log(e);
+  };
 
   useEffect(() => {
-    api.get<IGenreResponseProps[]>("genres").then((response) => {
-      setGenres(response.data);
-    });
+    api
+      .get<IGenreResponseProps[]>("genres")
+      .then((response) => {
+        setGenres(response.data);
+      })
+      .catch((e) => errorHandler(e));
   }, []);
 
   useEffect(() => {
@@ -46,13 +35,15 @@ export function App() {
       .get<IMovieProps[]>(`movies/?Genre_id=${selectedGenreId}`)
       .then((response) => {
         setMovies(response.data);
-      });
+      })
+      .catch((e) => errorHandler(e));
 
     api
       .get<IGenreResponseProps>(`genres/${selectedGenreId}`)
       .then((response) => {
         setSelectedGenre(response.data);
-      });
+      })
+      .catch((e) => errorHandler(e));
   }, [selectedGenreId]);
 
   function handleClickButton(id: number) {
@@ -66,7 +57,6 @@ export function App() {
         selectedGenreId={selectedGenreId}
         handleClickButton={handleClickButton}
       />
-
       <Content movies={movies} selectedGenre={selectedGenre} />
     </div>
   );

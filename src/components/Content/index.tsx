@@ -12,11 +12,11 @@ export function Content({ selectedGenre, movies }: IContentProps) {
           Categoria:<span> {selectedGenre.title}</span>
         </span>
       </header>
-
       <main>
         <div className="movies-list">
           {movies.map((movie) => (
             <MovieCard
+              key={movie.imdbID}
               title={movie.Title}
               poster={movie.Poster}
               runtime={movie.Runtime}
